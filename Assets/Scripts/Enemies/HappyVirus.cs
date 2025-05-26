@@ -4,6 +4,7 @@ public class HappyVirus : MonoBehaviour
 {
     public float growthInterval = 3f; // 증식 주기
     public GameObject virusPrefab; // 증식용 Prefab
+    public int maxSpawnCount = 33;  // 화면 가득칠 때 기준
 
     private float clickTime = 0f;
     private int clickCount = 0;
@@ -27,6 +28,7 @@ public class HappyVirus : MonoBehaviour
 
     void Duplicate()
     {
+
         // 메인 카메라 가져오기
         Camera cam = Camera.main;
 
@@ -38,5 +40,13 @@ public class HappyVirus : MonoBehaviour
 
         // 생성
         Instantiate(virusPrefab, worldPos, Quaternion.identity);
+
+        // 화면에 남은 해피바이러스 개수 체크
+        int count = FindObjectsOfType<HappyVirus>().Length;
+        if (count >= maxSpawnCount)
+        {
+            // 최대 목숨만큼 차감 → 즉시 게임오버
+            GameManager.Instance.LoseLife(GameManager.Instance.maxLife);
+        }
     }
 }

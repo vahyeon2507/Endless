@@ -3,65 +3,80 @@ using UnityEngine;
 
 public class ShuffleCard : MonoBehaviour
 {
-    public SpriteRenderer[] cards;        // [0]=EXIT, [1]=STOP, [2]=STOP
-    public Transform[] positions;         // 3개의 레인 월드 좌표
-    public float shuffleDuration = 2f;    // 셔플 애니메이션 총 시간
-    public int shuffleCount = 10;         // 셔플 횟수
+    public SpriteRenderer[] cards;     // 카드 3장의 SpriteRenderer
+    public Transform[] positions;      // 3개 레인 위치
+    public float shuffleDuration = 2f; // 셔플 총 시간
+    public int shuffleCount = 10;      // 셔플 횟수
 
-    private int correctIndex;             // EXIT 카드가 최종적으로 위치할 인덱스
+    private Collider2D[] colliders;    // 카드마다 붙은 Collider2D 모아두기
+    private int correctIndex;
+
+    void Awake()
+    {
+        // 모든 자식 카드의 Collider2D 컴포넌트 수집
+        colliders = GetComponentsInChildren<Collider2D>();
+    }
 
     void Start()
     {
-        // 최초 로테이션: cards[i].transform.position = positions[i].position
-        for (int i = 0; i < 3; i++)
+        // 시작 전에는 충돌 감지 끔
+        EnableColliders(false);
+
+        // 카드 초기 위치 세팅
+        for (int i = 0; i < cards.Length; i++)
             cards[i].transform.position = positions[i].position;
 
-        // EXIT 카드는 0, STOP 카드는 1,2 로 세팅
+        // 셔플 코루틴 시작
         StartCoroutine(DoShuffle());
     }
 
     IEnumerator DoShuffle()
     {
+        float interval = shuffleDuration / shuffleCount;
+
         for (int i = 0; i < shuffleCount; i++)
         {
-            // 두 카드 인덱스 랜덤 교환
-            int a = Random.Range(0, 3);
+            int a = Random.Range(0, cards.Length);
             int b;
-            do { b = Random.Range(0, 3); } while (b == a);
+            do { b = Random.Range(0, cards.Length); }
+            while (b == a);
 
             // 위치 스왑
-            Vector3 posA = cards[a].transform.position;
+            Vector3 tmp = cards[a].transform.position;
             cards[a].transform.position = cards[b].transform.position;
-            cards[b].transform.position = posA;
+            cards[b].transform.position = tmp;
 
-            yield return new WaitForSeconds(shuffleDuration / shuffleCount);
+            yield return new WaitForSeconds(interval);
         }
 
-        // 최종 위치 파악
-        for (int i = 0; i < 3; i++)
-            if (cards[i].sprite.name.Contains("exit"))  // EXIT 스프라이트 이름 기준
+        // EXIT 카드가 최종적으로 어느 인덱스에 있는지 계산
+        for (int i = 0; i < cards.Length; i++)
+            if (cards[i].sprite.name.ToLower().Contains("exit"))
                 correctIndex = i;
 
-        // 이제 카드들을 콜라이더만 남긴 채 고정
+        // 셔플 끝! 이제 충돌 감지 켜기
         EnableColliders(true);
     }
 
     void EnableColliders(bool on)
     {
-        foreach (var r in cards)
-            r.GetComponent<Collider2D>().enabled = on;
+        foreach (var col in colliders)
+            col.enabled = on;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    // 플레이어가 카드 충돌 영역에 들어올 때 실행
+    void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;
 
-        // 플레이어가 멈출 레인(positions[correctIndex])에 있지 않으면 피해
-        if (Mathf.Abs(other.transform.position.x - positions[correctIndex].position.x) > 0.1f)
+        // 잘못된 레인에 있으면 목숨 감소
+        float dx = Mathf.Abs(other.transform.position.x - positions[correctIndex].position.x);
+        if (dx > 0.1f)
         {
-            Debug.Log("셔플 실패! 목숨 하나 감소");
-            // GameManager.Instance.LoseLife();
+            Debug.Log("셔플 실패! 목숨 감소");
+            GameManager.Instance.LoseLife();
         }
+
         Destroy(gameObject);
     }
 }

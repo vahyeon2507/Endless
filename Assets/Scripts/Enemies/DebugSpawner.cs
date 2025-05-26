@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemySpawner : MonoBehaviour
+public class DebugSpawner : MonoBehaviour
 {
     public GameObject doppelPrefab;
 

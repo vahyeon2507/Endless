@@ -17,10 +17,10 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.A))
         {
-            transform.position = new Vector3(0,0,0);
+            transform.position = new Vector3(0, 0, 0);
         }
 
-            if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
         {
             Debug.Log("오른쪽");
             isLeft = false;

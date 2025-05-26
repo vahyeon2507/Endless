@@ -14,7 +14,7 @@ public class Doppelganger : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             Debug.Log("도플갱어에게 맞음!");
-            // GameManager.Instance.LoseLife();  ← 나중에 연동
+            GameManager.Instance.LoseLife();
             Destroy(gameObject);
         }
         else if (collision.CompareTag("Killzone"))
