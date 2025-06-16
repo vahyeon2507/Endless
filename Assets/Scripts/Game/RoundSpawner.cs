@@ -20,6 +20,7 @@ public class RoundSpawner : MonoBehaviour
         spawnTimer = spawnInterval;
     }
 
+
     void Update()
     {
         if (!RoundManager.Instance.IsRoundActive)
@@ -72,6 +73,8 @@ public class RoundSpawner : MonoBehaviour
             float x = laneX[Random.Range(0, laneX.Length)];
             spawnPos = new Vector3(x, spawnY, 0f);
         }
+
+        
 
         Instantiate(prefab, spawnPos, Quaternion.identity);
     }

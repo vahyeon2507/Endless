@@ -9,6 +9,17 @@ public class GameManager : MonoBehaviour
 	public int maxLife = 3;
 	private int currentLife;
 
+	/// <summary>
+	/// 플레이어가 주운 키의 ID. 없으면 -1.
+	/// </summary>
+	public int CurrentKey { get; set; } = -1;
+
+	public void PickupKey(int keyID)
+	{
+		CurrentKey = keyID;
+		// UI 갱신 등 추가 가능
+	}
+
 	void Awake()
 	{
 		// 싱글톤 초기화
@@ -41,3 +52,4 @@ public class GameManager : MonoBehaviour
 		enabled = false;
 	}
 }
+

@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -6987336881924685435, guid: 7495901c9adb46246926476430638004, type: 3}
+  m_Sprite: {fileID: 944343434690811855, guid: e5dd4a6504421654b938de5bfdf5aed4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -169,8 +169,8 @@ MonoBehaviour:
   fallSpeed: 5
   kickUpSpeed: 7
   spawnHighY: 7
-  playerY: 0.5
-  goalSpawnStartY: 7
+  missY: -7
   goalPrefab: {fileID: 5017353631164318071, guid: fe99f7e4be8b9c94aa2b9e3c0107e5c1, type: 3}
+  goalSpawnY: 7
   goalFallSpeed: 4
-  goalDestroyDelay: 1.5
+  goalDestroyY: -7
