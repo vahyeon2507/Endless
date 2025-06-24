@@ -1,16 +1,30 @@
+// Assets/Scripts/Entities/KeyPickup.cs
 using UnityEngine;
+using static Firewall;
 
+[RequireComponent(typeof(Collider2D))]
 public class KeyPickup : MonoBehaviour
 {
-    [Tooltip("0=빨강, 1=파랑, 2=노랑 등 키 색 인덱스")]
-    public int keyID;
+    public KeyColor keyColor;                  // 이 열쇠의 색
+    public float bobAmplitude = 0.1f;          // 둥실둥실 효과
+    public float bobSpeed = 3f;
 
-    void OnTriggerEnter2D(Collider2D other)
+    Vector3 startPos;
+
+    void Start() => startPos = transform.position;
+
+    void Update()
     {
-        if (!other.CompareTag("Player")) return;
+        // 살짝 위아래 둥실둥실
+        float yOff = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
+        transform.position = startPos + Vector3.up * yOff;
+    }
 
-        Debug.Log($"키 획득: {keyID}");
-        GameManager.Instance.PickupKey(keyID);
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (!col.CompareTag("Player")) return;
+
+        GameManager.Instance.PickKey(keyColor);
         Destroy(gameObject);
     }
 }

@@ -1,55 +1,44 @@
+// Assets/Scripts/GameManager/GameManager.cs
 using UnityEngine;
+using static Firewall;
 
 public class GameManager : MonoBehaviour
 {
-	// 1) 전역 인스턴스
-	public static GameManager Instance { get; private set; }
+    public static GameManager Instance { get; private set; }
 
-	public UIManager uiManager; // Inspector에서 드래그 연결
-	public int maxLife = 3;
-	private int currentLife;
+    [Header("Life / Gauge")]
+    public int maxLife = 3;
+    public int life = 3;
 
-	/// <summary>
-	/// 플레이어가 주운 키의 ID. 없으면 -1.
-	/// </summary>
-	public int CurrentKey { get; set; } = -1;
+    [Header("현재 들고 있는 키 색상")]
+    public KeyColor CurrentKey { get; private set; } = KeyColor.None;
 
-	public void PickupKey(int keyID)
-	{
-		CurrentKey = keyID;
-		// UI 갱신 등 추가 가능
-	}
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
-	void Awake()
-	{
-		// 싱글톤 초기화
-		if (Instance != null && Instance != this)
-		{
-			Destroy(gameObject);
-			return;
-		}
-		Instance = this;
-		DontDestroyOnLoad(gameObject);
-	}
+    #region Life / Gauge
+    public void LoseLife(int amount = 1)
+    {
+        life -= amount;
+        Debug.Log($"Life –{amount} ▶ 남은 목숨: {life}");
+        if (life <= 0) Debug.Log("GAME OVER");
+        // TODO: UIManager.UpdateLife(life);
+    }
+    #endregion
 
-	void Start()
-	{
-		currentLife = maxLife;
-		uiManager.UpdateLife(currentLife);
-	}
+    #region Key 로직
+    public void PickKey(KeyColor color)
+    {
+        CurrentKey = color;
+        Debug.Log($"🔑 Key Picked: {color}");
+        // HUD에 열쇠 표시가 있다면 여기서 업데이트
+        // RoundManager 같은 애가 문들에게 브로드캐스트할 수도 있음
+    }
 
-	public void LoseLife(int amount = 1)
-	{
-		currentLife = Mathf.Max(0, currentLife - amount);
-		uiManager.UpdateLife(currentLife);
-		if (currentLife <= 0) GameOver();
-	}
-
-	void GameOver()
-	{
-		Debug.Log("게임 오버!");
-		// TODO: 리스타트, 메뉴 전환 등
-		enabled = false;
-	}
+    public void ConsumeKey() => CurrentKey = KeyColor.None;
+    #endregion
 }
-
