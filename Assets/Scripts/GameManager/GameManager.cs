@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     public int maxLife = 3;
     public int life = 3;
 
+    private UIManager uiManager;
+
+
     [Header("현재 들고 있는 키 색상")]
     public KeyColor CurrentKey { get; private set; } = KeyColor.None;
 
@@ -18,6 +21,8 @@ public class GameManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        uiManager = FindObjectOfType<UIManager>();
     }
 
     #region Life / Gauge
@@ -27,6 +32,11 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Life –{amount} ▶ 남은 목숨: {life}");
         if (life <= 0) Debug.Log("GAME OVER");
         // TODO: UIManager.UpdateLife(life);
+
+        if (uiManager != null)
+            uiManager.UpdateLife(life);
+        else
+            Debug.LogWarning("UIManager 참조가 없습니다!");
     }
     #endregion
 

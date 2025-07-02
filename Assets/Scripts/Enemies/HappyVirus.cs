@@ -13,18 +13,27 @@ public class HappyVirus : MonoBehaviour
     {
         InvokeRepeating("Duplicate", growthInterval, growthInterval);
     }
-
     void OnMouseDown()
     {
+        float now = Time.time;
         clickCount++;
+
         if (clickCount == 1)
-            clickTime = Time.time;
-        else if (clickCount == 2 && Time.time - clickTime < 0.3f) // 더블클릭 판정
         {
-            Debug.Log("HappyVirus 더블클릭 삭제!");
-            Destroy(gameObject);
+            clickTime = now;
+        }
+        else if (clickCount == 2)
+        {
+            if (now - clickTime < 0.3f)
+            {
+                // 더블 클릭 성공
+                Destroy(gameObject);
+            }
+            // 클릭 횟수는 무조건 초기화
+            clickCount = 0;
         }
     }
+
 
     void Duplicate()
     {
@@ -48,5 +57,9 @@ public class HappyVirus : MonoBehaviour
             // 최대 목숨만큼 차감 → 즉시 게임오버
             GameManager.Instance.LoseLife(GameManager.Instance.maxLife);
         }
+    }
+    void OnDestroy()
+    {
+        CancelInvoke(nameof(Duplicate));
     }
 }
