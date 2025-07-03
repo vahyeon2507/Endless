@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Vector3 leftLane = new Vector3(-2f, -2, 0);   // 왼쪽 위치
-    private Vector3 rightLane = new Vector3(2f, -2, 0);   // 오른쪽 위치
+    private Vector3 leftLane = new Vector3(-2f, -3.5f, 0);   // 왼쪽 위치
+    private Vector3 rightLane = new Vector3(2f, -3.5f, 0);   // 오른쪽 위치
     private bool isLeft = true;
 
     void Update()
@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.A))
         {
-            transform.position = new Vector3(0, -2, 0);
+            transform.position = new Vector3(0, -3.5f, 0);
         }
 
         if (Input.GetKey(KeyCode.D))
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.D))
         {
-            transform.position = new Vector3(0, -2, 0);
+            transform.position = new Vector3(0, -3.5f, 0);
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
