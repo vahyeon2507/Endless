@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 7314bd248097e4541abe16e6a13d82ab
+guid: 2485d30aad7fde84583d3d1180063326
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7928044179173407474
-    second: "\uC2A4\uD504\uB77C\uC774\uD2B8-0002_0"
+      213: -5278734259511242463
+    second: hp_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -97,19 +97,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -126,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\uC2A4\uD504\uB77C\uC774\uD2B8-0002_0"
+      name: hp_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 640
-        height: 360
+        width: 21
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e0504c8d2dde9f190800000000000000
-      internalID: -7928044179173407474
+      spriteID: 121d52ea82b2eb6b0800000000000000
+      internalID: -5278734259511242463
       vertices: []
       indices: 
       edges: []
@@ -160,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      "\uC2A4\uD504\uB77C\uC774\uD2B8-0002_0": -7928044179173407474
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
