@@ -143,10 +143,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_0"
       rect:
         serializedVersion: 2
-        x: 10
-        y: 75
-        width: 17
-        height: 31
+        x: 0
+        y: 72
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -165,10 +165,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_1"
       rect:
         serializedVersion: 2
-        x: 46
-        y: 76
-        width: 17
-        height: 31
+        x: 36
+        y: 72
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -187,10 +187,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_2"
       rect:
         serializedVersion: 2
-        x: 81
-        y: 75
-        width: 19
-        height: 31
+        x: 72
+        y: 72
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -209,10 +209,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_3"
       rect:
         serializedVersion: 2
-        x: 115
-        y: 74
-        width: 21
-        height: 31
+        x: 108
+        y: 72
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -231,10 +231,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_4"
       rect:
         serializedVersion: 2
-        x: 7
-        y: 37
-        width: 21
-        height: 31
+        x: 0
+        y: 36
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -253,10 +253,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_5"
       rect:
         serializedVersion: 2
-        x: 44
-        y: 42
-        width: 19
-        height: 30
+        x: 36
+        y: 36
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -275,10 +275,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_6"
       rect:
         serializedVersion: 2
-        x: 80
-        y: 43
-        width: 19
-        height: 29
+        x: 72
+        y: 36
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -297,10 +297,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_7"
       rect:
         serializedVersion: 2
-        x: 116
-        y: 41
-        width: 19
-        height: 30
+        x: 108
+        y: 36
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -319,10 +319,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_8"
       rect:
         serializedVersion: 2
-        x: 7
-        y: 3
-        width: 21
-        height: 31
+        x: 0
+        y: 0
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -341,10 +341,10 @@ TextureImporter:
       name: "\uB7EC\uB2DD-Sheet_9"
       rect:
         serializedVersion: 2
-        x: 43
-        y: 2
-        width: 21
-        height: 32
+        x: 36
+        y: 0
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

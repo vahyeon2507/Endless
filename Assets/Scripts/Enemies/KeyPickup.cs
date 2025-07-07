@@ -1,6 +1,8 @@
 // Assets/Scripts/Entities/KeyPickup.cs
 using UnityEngine;
 using static Firewall;
+using Common;  // Enums.cs 의 namespace
+
 
 [RequireComponent(typeof(Collider2D))]
 public class KeyPickup : MonoBehaviour

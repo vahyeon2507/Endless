@@ -1,6 +1,8 @@
 // Assets/Scripts/Enemies/Firewall.cs
 using UnityEngine;
 using System.Collections;
+using Common;  // Enums.cs 의 namespace
+
 
 [RequireComponent(typeof(Collider2D))]
 public class Firewall : MonoBehaviour

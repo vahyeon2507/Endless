@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3749678963825343389}
   m_Layer: 0
   m_Name: KeyPickup
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,7 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e5b17e9fc011884bb3e8b3cdc1e34eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyID: 0
+  keyColor: 0
+  bobAmplitude: 0.1
+  bobSpeed: 3
 --- !u!212 &8638769581573526871
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -115,7 +117,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e5b17e9fc011884bb3e8b3cdc1e34eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyID: 0
+  keyColor: 0
+  bobAmplitude: 0.1
+  bobSpeed: 3
 --- !u!58 &3749678963825343389
 CircleCollider2D:
   m_ObjectHideFlags: 0
