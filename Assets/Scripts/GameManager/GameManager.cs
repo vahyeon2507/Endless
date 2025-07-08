@@ -1,13 +1,24 @@
 // Assets/Scripts/GameManager/GameManager.cs
 using UnityEngine;
 using Common;            // ← KeyColor enum
-// using static Firewall; // ← 삭제!
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [Header("Life / Gauge")]
+    [Tooltip("1분(60초) 동안 0→1.0 으로 채우려면 60")]
+    public float gaugeFillDuration = 60f;
+
+    void Update()
+    {
+        if (currentGauge < maxGauge)
+        {
+            // 1초당 1/gaugeFillDuration 만큼 차오르게
+            AddGauge(Time.deltaTime / gaugeFillDuration);
+        }
+    }
+
+        [Header("Life / Gauge")]
     public int maxLife = 3;
     public int life = 3;
 

@@ -1,13 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using Common;    // KeyColor enum
+using Common;    // Enums.cs 에 정의된 KeyColor 를 가져옵니다
 
 public class FirewallSpawner : MonoBehaviour
 {
-    public void SpawnFirewall()
-    {
-        SpawnKeyAndDoors();
-    }
     [Header("Prefabs")]
     public GameObject keyPrefab;       // KeyPickup 스크립트가 붙어 있어야 함
     public GameObject firewallPrefab;  // Firewall 스크립트가 붙어 있어야 함
@@ -21,69 +18,82 @@ public class FirewallSpawner : MonoBehaviour
     [Header("Spawn Settings")]
     public float[] laneX = { -2f, 0f, 2f };
     public float spawnY = 5f;
-    public float keySpawnDelay = 1f;
     public float doorSpawnDelay = 1f;
 
-    private float keyTimer;
-
-    void Start()
+    /// <summary>
+    /// 외부에서 이 메서드를 호출하면
+    /// 키 1개 → (딜레이) → 문 3개 사이클이 한 번 돌게 됩니다.
+    /// </summary>
+    public void SpawnFirewall()
     {
-        keyTimer = keySpawnDelay;
+        SpawnKeyAndDoors();
     }
 
-    void Update()
+    private void SpawnKeyAndDoors()
     {
-        keyTimer -= Time.deltaTime;
-        if (keyTimer <= 0f)
-        {
-            SpawnKeyAndDoors();
-            keyTimer = keySpawnDelay;
-        }
-    }
-
-    void SpawnKeyAndDoors()
-    {
-        // 1) 랜덤 키 컬러 뽑기 (1=Red, 2=Blue, 3=Yellow)
+        // 1) 랜덤 키 색 뽑기
         KeyColor chosenColor = (KeyColor)Random.Range(1, 4);
 
-        // 2) 키 스폰
+        // 2) 랜덤 레인에 키 스폰
         float keyX = laneX[Random.Range(0, laneX.Length)];
-        var keyGO = Instantiate(keyPrefab, new Vector3(keyX, spawnY, 0), Quaternion.identity);
-        // SpriteRenderer 에 스프라이트 할당
+        var keyGO = Instantiate(
+            keyPrefab,
+            new Vector3(keyX, spawnY, 0f),
+            Quaternion.identity
+        );
+
+        // **여기부터 추가된 부분**
+        // KeyPickup 컴포넌트에 색 정보 넘기기
+        var keyPickup = keyGO.GetComponent<KeyPickup>();
+        if (keyPickup != null)
+            keyPickup.keyColor = chosenColor;
+        else
+            Debug.LogWarning("KeyPickup 컴포넌트가 없습니다!");
+
+        // 키 스프라이트 교체
         var keySr = keyGO.GetComponent<SpriteRenderer>();
         keySr.sprite = keySprites[(int)chosenColor - 1];
+        // **여기까지**
 
-        // 3) 잠시 기다렸다가 3개의 문 스폰
+        // 3) 딜레이 후 문 3개 스폰
         StartCoroutine(SpawnDoorsAfterDelay(chosenColor));
     }
 
-    IEnumerator SpawnDoorsAfterDelay(KeyColor doorColor)
+    private IEnumerator SpawnDoorsAfterDelay(KeyColor doorColor)
     {
         yield return new WaitForSeconds(doorSpawnDelay);
 
-        // X 자리 섞기
-        var indices = new List<int> { 0, 1, 2 };
+        // 3개 레인 인덱스와 3개 색깔 리스트를 랜덤 섞기
+        var laneIndices = new List<int> { 0, 1, 2 };
+        var doorColors = new List<KeyColor> { KeyColor.Red, KeyColor.Blue, KeyColor.Yellow };
+
         for (int i = 0; i < 3; i++)
         {
-            // 랜덤 하나 꺼내서
-            int pick = Random.Range(0, indices.Count);
-            int laneIndex = indices[pick];
-            indices.RemoveAt(pick);
+            // 랜덤 레인 선택
+            int pickLane = Random.Range(0, laneIndices.Count);
+            int laneIndex = laneIndices[pickLane];
+            laneIndices.RemoveAt(pickLane);
 
-            // 문 스폰
+            // 랜덤 색 선택
+            int pickColor = Random.Range(0, doorColors.Count);
+            KeyColor color = doorColors[pickColor];
+            doorColors.RemoveAt(pickColor);
+
+            // 문 생성
             var doorGO = Instantiate(
                 firewallPrefab,
-                new Vector3(laneX[laneIndex], spawnY, 0),
+                new Vector3(laneX[laneIndex], spawnY, 0f),
                 Quaternion.identity
             );
 
-            // Firewall 스크립트에도 색 정보 넣어주기
+            // Firewall 스크립트에 색 정보 세팅
             var fw = doorGO.GetComponent<Firewall>();
-            fw.doorColor = doorColor;  // 플레이어와 비교할 때 쓸 값
+            if (fw != null)
+                fw.doorColor = color;
 
-            // SpriteRenderer 에 스프라이트 할당
+            // 문 스프라이트 교체
             var doorSr = doorGO.GetComponent<SpriteRenderer>();
-            doorSr.sprite = doorSprites[(int)doorColor - 1];
+            doorSr.sprite = doorSprites[(int)color - 1];
         }
     }
 }

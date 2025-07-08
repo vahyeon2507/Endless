@@ -1,30 +1,20 @@
 // Assets/Scripts/Entities/KeyPickup.cs
 using UnityEngine;
-using static Firewall;
-using Common;  // Enums.cs 의 namespace
-
+using Common;  // Enums.cs 에 정의된 KeyColor 를 가져옵니다
 
 [RequireComponent(typeof(Collider2D))]
 public class KeyPickup : MonoBehaviour
 {
-    public KeyColor keyColor;                  // 이 열쇠의 색
-    public float bobAmplitude = 0.1f;          // 둥실둥실 효과
-    public float bobSpeed = 3f;
+    [Tooltip("스포너에서 할당되는 이 열쇠의 색깔")]
+    public KeyColor keyColor;
 
-    Vector3 startPos;
-
-    void Start() => startPos = transform.position;
-
-    void Update()
-    {
-        // 살짝 위아래 둥실둥실
-        float yOff = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
-        transform.position = startPos + Vector3.up * yOff;
-    }
-
+    /// <summary>
+    /// 플레이어가 닿으면 GameManager 에 색상을 전달하고 스스로 파괴
+    /// </summary>
     void OnTriggerEnter2D(Collider2D col)
     {
-        if (!col.CompareTag("Player")) return;
+        if (!col.CompareTag("Player"))
+            return;
 
         GameManager.Instance.PickKey(keyColor);
         Destroy(gameObject);
