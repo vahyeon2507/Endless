@@ -26,7 +26,8 @@ public class UIManager : MonoBehaviour
     {
         for (int i = 0; i < hearts.Length; i++)
         {
-            hearts[i].sprite = (i < life) ? fullHeart : emptyHeart;
+            if (hearts[i] != null)            // ← null(파괴) 체크 
+                hearts[i].sprite = i < life ? fullHeart : emptyHeart;
         }
     }
 
@@ -38,10 +39,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void UpdateGauge(float percent)
     {
-        float p = Mathf.Clamp01(percent);
-        gaugeFill.fillAmount = p;
-
-        if (purgePrompt != null)
-            purgePrompt.SetActive(p >= 1f);
+        if (gaugeFill != null)                // ← null(파괴) 체크
+            gaugeFill.fillAmount = Mathf.Clamp01(percent);
     }
 }
