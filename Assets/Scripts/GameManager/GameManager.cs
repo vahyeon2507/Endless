@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // singleton
+        // 싱글톤 설정
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -38,7 +38,28 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        // 처음 한 번만 찾아두기
         uiManager = FindObjectOfType<UIManager>();
+    }
+
+    void OnEnable()
+    {
+        // 씬 로드될 때마다 UIManager 갱신
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 새 씬의 UIManager를 찾아서 참조 갱신
+        uiManager = FindObjectOfType<UIManager>();
+        // 현재 상태를 UI에 반영
+        uiManager?.UpdateLife(life);
+        uiManager?.UpdateGauge(currentGauge);
     }
 
     void Update()
@@ -61,7 +82,6 @@ public class GameManager : MonoBehaviour
         // UI 업데이트
         uiManager?.UpdateLife(life);
 
-        // 목숨이 다 떨어졌을 때만 게임오버
         if (life <= 0)
         {
             Debug.Log("GAME OVER");
@@ -71,14 +91,14 @@ public class GameManager : MonoBehaviour
 
     private System.Collections.IEnumerator DoGameOver()
     {
-        // 한 프레임 대기해서 UI(0 라이프)가 반영된 후 씬 전환
+        // 한 프레임 대기해서 UI가 반영된 뒤 전환
         yield return null;
         SceneManager.LoadScene("GameOver");
     }
 
     #endregion
 
-    #region Gauge (숨고르기)
+    #region Gauge
 
     /// <summary>
     /// 게이지를 delta만큼 채우고 UI 갱신
@@ -90,7 +110,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 게이지가 maxGauge에 도달하면 모든 적 제거 + 게이지 리셋
+    /// 모든 적 제거 + 게이지 리셋
     /// </summary>
     public void PurgeAllEnemies()
     {
@@ -99,14 +119,12 @@ public class GameManager : MonoBehaviour
             Debug.Log("게이지가 가득 차지 않았습니다!");
             return;
         }
-
         var enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (var e in enemies)
             Destroy(e);
-
         Debug.Log($"숨고르기 발동! 적 {enemies.Length}마리 제거.");
         currentGauge = 0f;
-        uiManager?.UpdateGauge(0f);
+        uiManager?.UpdateGauge(currentGauge);
     }
 
     #endregion
@@ -117,13 +135,27 @@ public class GameManager : MonoBehaviour
     {
         CurrentKey = color;
         Debug.Log($"🔑 Key Picked: {color}");
-        // (필요시 UIManager 업데이트)
     }
 
     public void ConsumeKey()
     {
         CurrentKey = KeyColor.None;
-        // (필요시 UIManager 업데이트)
+    }
+
+    #endregion
+
+    #region Reset
+
+    /// <summary>
+    /// 게임 시작/재시작 시 상태 초기화
+    /// </summary>
+    public void ResetGame()
+    {
+        life = maxLife;
+        uiManager?.UpdateLife(life);
+
+        currentGauge = 0f;
+        uiManager?.UpdateGauge(currentGauge);
     }
 
     #endregion

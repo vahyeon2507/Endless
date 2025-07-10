@@ -16,7 +16,7 @@ public class RoundManager : MonoBehaviour
 
     // 프로퍼티
     public int CurrentRound { get; private set; }
-    public bool IsRoundActive { get; private set; }
+    public bool IsRoundActive { get; set; }
 
     private float timer;
 

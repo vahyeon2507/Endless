@@ -1,9 +1,11 @@
+// Assets/Scripts/Game/RoundSpawner.cs
 using UnityEngine;
 
 public class RoundSpawner : MonoBehaviour
 {
-    [Header("적 Prefabs (도플, 해피, 셔플, 거머리, 축구공, 방화벽)")]
-    public GameObject[] enemyPrefabs;     // Inspector에 꼭 Firewall Prefab도 넣어두세요.
+    [Header("적 Prefabs (도플, 해피, 셔플, 거머리, 축구공, 방화벽, 패스워드)")]
+    [Tooltip("Inspector에 꼭 FirewallSpawner 와 PasswordUIGroup Prefab도 넣어두세요.")]
+    public GameObject[] enemyPrefabs;
 
     [Header("스폰 주기 (초)")]
     public float spawnInterval = 2f;
@@ -25,7 +27,6 @@ public class RoundSpawner : MonoBehaviour
 
     void Update()
     {
-        // 라운드가 활성 상태가 아니면 스폰 중지
         if (!RoundManager.Instance.IsRoundActive)
             return;
 
@@ -43,11 +44,30 @@ public class RoundSpawner : MonoBehaviour
         if (FindObjectOfType<HappyVirus>() != null)
             return;
 
-        // 1) 6종 enemyPrefabs 중 하나 랜덤 선택
+        // 1) enemyPrefabs 중 하나 랜덤 선택
         int idx = Random.Range(0, enemyPrefabs.Length);
         GameObject prefab = enemyPrefabs[idx];
 
-        // 2) 만약 방화벽 Prefab이라면 → FirewallSpawner로 위임
+        // --- 새 분기: HappyVirus는 뷰포트 랜덤 위치에 스폰 ---
+        if (prefab.GetComponent<HappyVirus>() != null)
+        {
+            Camera cam = Camera.main;
+            float z = cam.nearClipPlane + 1f;
+            Vector3 vp = new Vector3(Random.value, Random.value, z);
+            Vector3 worldPos = cam.ViewportToWorldPoint(vp);
+            Instantiate(prefab, worldPos, Quaternion.identity);
+            return;
+        }
+
+        // --- 기존 분기: PasswordChallenge ---
+        if (prefab.GetComponent<PasswordChallenge>() != null)
+        {
+            // 캔버스에 배치된 원본 위치 그대로 Instantiate
+            Instantiate(prefab);
+            return;
+        }
+
+        // 방화벽
         if (prefab.GetComponent<Firewall>() != null)
         {
             if (firewallSpawner != null)
@@ -57,14 +77,14 @@ public class RoundSpawner : MonoBehaviour
             return;
         }
 
-        // 3) 거머리(Leech)만 특별 처리: 위치 없이 그냥 Instantiate
+        // 거머리
         if (prefab.GetComponent<Leech_LShape>() != null)
         {
             Instantiate(prefab);
             return;
         }
 
-        // 4) 셔플카드만 X=0으로 스폰 (내부에서 positions[] 사용)
+        // 셔플카드
         Vector3 spawnPos;
         if (prefab.GetComponent<ShuffleCard>() != null)
         {
@@ -72,7 +92,7 @@ public class RoundSpawner : MonoBehaviour
         }
         else
         {
-            // 나머지(도플, 축구공 등)는 레인 X 중 랜덤
+            // 그 외(축구공, 도플갱어 등)는 레인 X 중 랜덤
             float x = laneX[Random.Range(0, laneX.Length)];
             spawnPos = new Vector3(x, spawnY, 0f);
         }

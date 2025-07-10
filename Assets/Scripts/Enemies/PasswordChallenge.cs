@@ -1,190 +1,140 @@
+ï»¿// Assets/Scripts/Entities/PasswordChallenge.cs
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Common;  // KeyColor enum
 
 public class PasswordChallenge : MonoBehaviour
 {
     [Header("Timing & Slow-Mo")]
-    [Tooltip("¹öÆ° ½ÃÄö½º¸¦ 1ÃÊ°£ º¸¿©Áİ´Ï´Ù (unscaled).")]
-    public float sequenceDisplayTime = 1f;
-    [Tooltip("¹öÆ° ÀÔ·ÂÀ» ¹ŞÀ» ÃÖ´ë ½Ã°£ (ÃÊ, unscaled).")]
-    public float inputTimeLimit = 3f;
-    [Tooltip("ÆĞ½º¿öµå µµÁß ÀüÃ¼ °ÔÀÓ ¼Óµµ¸¦ ´À¸®°Ô ÇÒ ¹èÀ².")]
-    [Range(0.1f, 1f)]
-    public float slowTimeScale = 0.9f;
+    [Tooltip("ì „ì²´ ì…ë ¥ ë° íŒíŠ¸ ë…¸ì¶œ ì‹œê°„ (ì´ˆ)")]
+    public float inputTimeLimit = 4f;
+    [Tooltip("ì…ë ¥ ì¤‘ ê²Œì„ ì†ë„ ë°°ìœ¨")]
+    [Range(0.01f, 1f)]
+    public float slowTimeScale = 0.1f;
 
     [Header("UI References")]
-    [Tooltip("°ÔÀÓ È­¸éÀ» ¾îµÓ°Ô µ¤´Â Image (¹İÅõ¸í °ËÁ¤).")]
-    public Image overlayImage;
-    [Tooltip("ÆĞ½º¿öµå UI ÀüÃ¼¸¦ ¹­´Â CanvasGroup.")]
-    public CanvasGroup uiGroup;
-    [Tooltip("4Ä­Â¥¸® ¹öÆ° ½½·Ô ÀÌ¹ÌÁöµé.")]
+    public Image overlayImage;          // ì–´ë‘ì›Œì§€ëŠ” ë°˜íˆ¬ëª… ì˜¤ë²„ë ˆì´
+    public CanvasGroup uiGroup;         // ë²„íŠ¼ íŒíŠ¸ë“¤ì„ ë¸”ë¡í•˜ê¸° ìœ„í•´
+
+    [Header("Sequence Images")]
+    [Tooltip("íŒíŠ¸ë¡œ í‘œì‹œë  4ì¹¸ Image")]
     public Image[] sequenceImages = new Image[4];
 
     [Header("Button Sprites")]
-    [Tooltip("0:AÅ°, 1:DÅ°, 2:¸¶¿ì½º ÁÂÅ¬¸¯, 3:¸¶¿ì½º ¿ìÅ¬¸¯ ¼ø¼­")]
+    [Tooltip("A, D, ì¢Œí´ë¦­, ìš°í´ë¦­ ìˆœì„œëŒ€ë¡œ")]
     public Sprite[] buttonSprites = new Sprite[4];
 
-    // ³»ºÎ »óÅÂ
-    bool isActive = false;
-    int[] sequence = new int[4];
-    PlayerController playerCtrl;
+    // ë‚´ë¶€
+    private KeyColor[] sequence;        // ì •ë‹µ ì‹œí€€ìŠ¤ (permutation)
+    private int inputCount;
+    private PlayerController playerController;
+    private bool challengeEnded = false;
 
-    /// <summary>
-    /// ¿ÜºÎ¿¡¼­ È£ÃâÇÏ¸é ÆĞ½º¿öµå µµÀüÀÌ ½ÃÀÛµË´Ï´Ù.
-    /// </summary>
-    public void StartChallenge()
+    void Start()
     {
-        if (isActive) return;
-        isActive = true;
+        // 0) í”Œë ˆì´ì–´ ì…ë ¥ ì ê¸ˆ
+        playerController = FindObjectOfType<PlayerController>();
+        if (playerController != null)
+            playerController.enabled = false;
 
-        // 1) ´À·ÁÁü & ÀÔ·Â Àá±İ
+        // 1) Round ë©ˆì¶”ê³  ëŠë¦¬ê²Œ
         Time.timeScale = slowTimeScale;
-        playerCtrl = FindObjectOfType<PlayerController>();
-        if (playerCtrl) playerCtrl.enabled = false;
+        RoundManager.Instance.IsRoundActive = false;
 
-        // 2) ¹è°æ ¾îµÓ°Ô, UI º¸ÀÌ±â
+        // 2) UI ì¼œê¸°
         overlayImage.gameObject.SetActive(true);
-        uiGroup.alpha = 1f;
-        uiGroup.interactable = false; // ÀÌº¥Æ®½Ã½ºÅÛ ÀÔ·Â Â÷´Ü
+        uiGroup.blocksRaycasts = true;
 
-        // 3) ÄÚ·çÆ¾À¸·Î ½ÃÄö½º -> ÀÔ·Â ´Ü°è ÁøÇà
-        StartCoroutine(RunChallenge());
+        // 3) ëœë¤ ì‹œí€€ìŠ¤ ìƒì„± (0~3 ê° í‚¤ë¥¼ í•œ ë²ˆì”©ë§Œ)
+        sequence = new KeyColor[4];
+        int[] idx = new int[] { 0, 1, 2, 3 };
+        // Fisherâ€“Yates shuffle
+        for (int i = 0; i < idx.Length; i++)
+        {
+            int j = Random.Range(i, idx.Length);
+            int tmp = idx[i];
+            idx[i] = idx[j];
+            idx[j] = tmp;
+
+            sequence[i] = (KeyColor)idx[i];
+            sequenceImages[i].sprite = buttonSprites[idx[i]];
+            sequenceImages[i].color = Color.white;
+        }
+
+        inputCount = 0;
+        // 4) ì…ë ¥ ë£¨í”„ ì‹œì‘
+        StartCoroutine(HandleInput());
     }
 
-    IEnumerator RunChallenge()
+    IEnumerator HandleInput()
     {
-        // ¢º STEP 1: ·£´ı ½ÃÄö½º »ı¼º (0~3 Áß Áßº¹ ¾øÀÌ 4°³)
-        var idxs = new List<int> { 0, 1, 2, 3 };
-        for (int i = 0; i < 4; i++)
-        {
-            int pick = Random.Range(0, idxs.Count);
-            sequence[i] = idxs[pick];
-            idxs.RemoveAt(pick);
-        }
+        // 4.1) ì´ˆê¸° 1ì´ˆ ëŒ€ê¸°: ì–´ë–¤ ì…ë ¥ë„ ë°›ì§€ ì•ŠìŒ
+        yield return new WaitForSecondsRealtime(1f);
 
-        // ¢º STEP 2: ½ÃÄö½º 1ÃÊ°£ º¸¿©ÁÖ±â (unscaled)
-        for (int i = 0; i < 4; i++)
-        {
-            sequenceImages[i].sprite = buttonSprites[sequence[i]];
-            sequenceImages[i].color = Color.white;             // ¼±¸íÈ÷
-            sequenceImages[i].gameObject.SetActive(true);
-        }
-        yield return new WaitForSecondsRealtime(sequenceDisplayTime);
-
-        // ¢º STEP 3: ½½·ÔµéÀ» ¡°ºñÈ°¼ºÈ­µÈ¡± »öÀ¸·Î ÃÊ±âÈ­
-        for (int i = 0; i < 4; i++)
-        {
-            sequenceImages[i].sprite = null;
-            sequenceImages[i].color = new Color(1, 1, 1, 0.2f);
-        }
-
-        // ¢º STEP 4: ÇÃ·¹ÀÌ¾î ÀÔ·Â ¹Ş±â (ÃÖ´ë inputTimeLimit)
-        int inputCount = 0;
+        // 4.2) ë‚˜ë¨¸ì§€ inputTimeLimit ë™ì•ˆì—ë§Œ ì…ë ¥ í—ˆìš©
         float timer = inputTimeLimit;
-
-        while (inputCount < 4 && timer > 0f)
+        while (timer > 0f && inputCount < sequence.Length)
         {
             timer -= Time.unscaledDeltaTime;
 
-            // AÅ°
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                if (sequence[inputCount] == 0)
-                {
-                    sequenceImages[inputCount].sprite = buttonSprites[0];
-                    sequenceImages[inputCount].color = Color.white;
-                    inputCount++;
-                }
-                else
-                {
-                    OnFail();
-                    yield break;
-                }
-            }
-            // DÅ°
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                if (sequence[inputCount] == 1)
-                {
-                    sequenceImages[inputCount].sprite = buttonSprites[1];
-                    sequenceImages[inputCount].color = Color.white;
-                    inputCount++;
-                }
-                else
-                {
-                    OnFail();
-                    yield break;
-                }
-            }
-            // ¸¶¿ì½º ÁÂ
-            else if (Input.GetMouseButtonDown(0))
-            {
-                if (sequence[inputCount] == 2)
-                {
-                    sequenceImages[inputCount].sprite = buttonSprites[2];
-                    sequenceImages[inputCount].color = Color.white;
-                    inputCount++;
-                }
-                else
-                {
-                    OnFail();
-                    yield break;
-                }
-            }
-            // ¸¶¿ì½º ¿ì
-            else if (Input.GetMouseButtonDown(1))
-            {
-                if (sequence[inputCount] == 3)
-                {
-                    sequenceImages[inputCount].sprite = buttonSprites[3];
-                    sequenceImages[inputCount].color = Color.white;
-                    inputCount++;
-                }
-                else
-                {
-                    OnFail();
-                    yield break;
-                }
-            }
+            // 4ê°€ì§€ í‚¤ ì…ë ¥ ì²´í¬ (Unscaled so ìŠ¬ë¡œìš°ëª¨ë“œ ì˜í–¥ ì—†ìŒ)
+            if (Input.GetKeyDown(KeyCode.A)) yield return CheckKey(0);
+            else if (Input.GetKeyDown(KeyCode.D)) yield return CheckKey(1);
+            else if (Input.GetMouseButtonDown(0)) yield return CheckKey(2);
+            else if (Input.GetMouseButtonDown(1)) yield return CheckKey(3);
 
             yield return null;
         }
 
-        // Á¦ÇÑ½Ã°£ ³»¿¡ 4¹ø ¸ğµÎ ¸ÂÃèÀ¸¸é ¼º°ø, ¾Æ´Ï¸é ½ÇÆĞ
-        if (inputCount >= 4)
-            OnSuccess();
+        // ì„±ê³µ ì—¬ë¶€ ê²°ì •
+        bool success = (inputCount >= sequence.Length);
+        EndChallenge(success);
+    }
+
+    IEnumerator CheckKey(int keyIndex)
+    {
+        if (challengeEnded) yield break;
+
+        // ë§ì•˜ìœ¼ë©´ ë‹¤ìŒì¹¸ ë¶ˆíˆ¬ëª…í•˜ê²Œ í‘œì‹œ
+        if (sequence[inputCount] == (KeyColor)keyIndex)
+        {
+            sequenceImages[inputCount].color = Color.gray;
+            inputCount++;
+        }
         else
-            OnFail();
-    
-}
+        {
+            // í‹€ë¦¬ë©´ ì¦‰ì‹œ ì‹¤íŒ¨
+            EndChallenge(false);
+            yield break;
+        }
 
-
-
-    void OnSuccess()
-    {
-        // (¸ñ¼û Â÷°¨ ¾øÀ½)
-        EndChallenge();
+        yield return null;
     }
 
-    void OnFail()
+    private void EndChallenge(bool success)
     {
-        // ¸ñ¼û ÇÏ³ª ÀÒ±â
-        GameManager.Instance.LoseLife(1);
-        EndChallenge();
-    }
+        if (challengeEnded) return;
+        challengeEnded = true;
 
-    void EndChallenge()
-    {
-        // 1) ½Ã°£ º¹¿ø, ÀÔ·Â º¹¿ø
+        // 1) ì›ìƒ ë³µêµ¬
         Time.timeScale = 1f;
-        if (playerCtrl) playerCtrl.enabled = true;
+        RoundManager.Instance.IsRoundActive = true;
 
-        // 2) UI/¿À¹ö·¹ÀÌ ´İ±â
+        // í”Œë ˆì´ì–´ ì…ë ¥ ë³µêµ¬
+        if (playerController != null)
+            playerController.enabled = true;
+
         overlayImage.gameObject.SetActive(false);
-        uiGroup.alpha = 0f;
+        uiGroup.blocksRaycasts = false;
 
-        isActive = false;
+        // 2) ê²°ê³¼ ì²˜ë¦¬
+        if (success)
+            GameManager.Instance.ConsumeKey();
+        else
+            GameManager.Instance.LoseLife(1);
+
+        // 3) ìì‹  íŒŒê´´
+        Destroy(gameObject);
     }
 }
