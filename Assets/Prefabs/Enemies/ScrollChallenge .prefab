@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   windowWidth: 800
   windowHeight: 600
-  jitterInterval: 1
+  jitterInterval: 0.9
   topMargin: 100
   bottomMargin: 100
   leftMargin: 100
